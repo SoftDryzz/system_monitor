@@ -7,21 +7,19 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(
     name = "sysmon",
-    version = "0.1.0",
+    version = "0.2.0",
     author = "SoftDryzz",
     about = "A cross-platform CLI system monitoring tool",
     long_about = None
 )]
 pub struct Args {
-    // Future: Add watch mode
-    // /// Enable watch mode (continuous updates)
-    // #[arg(short, long)]
-    // pub watch: bool,
+    /// Enable watch mode (continuous updates)
+    #[arg(short, long)]
+    pub watch: bool,
 
-    // Future: Add custom interval
-    // /// Update interval in seconds (default: 1)
-    // #[arg(short, long, default_value_t = 1)]
-    // pub interval: u64,
+    /// Update interval in seconds (default: 1, only works with --watch)
+    #[arg(short, long, default_value_t = 1)]
+    pub interval: u64,
 }
 
 /// Parse command-line arguments
