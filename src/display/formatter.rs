@@ -2,10 +2,6 @@
 // Provides functions to display system information in a beautiful format
 
 use crate::monitor::system::SystemMonitor;
-use crossterm::{
-    execute,
-    terminal::{Clear, ClearType},
-};
 use std::io::{self, Write};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
