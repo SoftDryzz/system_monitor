@@ -15,7 +15,7 @@ fn main() {
 
     // Create system monitor instance
     let mut monitor = SystemMonitor::new();
-    
+
     // Refresh system information
     monitor.refresh();
 

@@ -17,13 +17,16 @@ pub fn print_header() {
 pub fn print_cpu_info(monitor: &SystemMonitor) {
     let cpu_info = monitor.cpu_info();
     let bar = create_bar(cpu_info.global_usage, 20);
-    
+
     println!("CPU Usage:  {:.1}%  {}", cpu_info.global_usage, bar);
-    
+
     // Display each core
     for core in &cpu_info.cores {
         let core_bar = create_bar(core.usage, 15);
-        println!("  Core {:2}:  {:5.1}%  {}", core.index, core.usage, core_bar);
+        println!(
+            "  Core {:2}:  {:5.1}%  {}",
+            core.index, core.usage, core_bar
+        );
     }
     println!();
 }
@@ -32,12 +35,10 @@ pub fn print_cpu_info(monitor: &SystemMonitor) {
 pub fn print_memory_info(monitor: &SystemMonitor) {
     let mem_info = monitor.memory_info();
     let bar = create_bar(mem_info.percentage as f32, 20);
-    
+
     println!(
         "Memory:     {:.2}/{:.2} GB ({:.1}%)",
-        mem_info.used_gb,
-        mem_info.total_gb,
-        mem_info.percentage
+        mem_info.used_gb, mem_info.total_gb, mem_info.percentage
     );
     println!("            {}", bar);
     println!();
@@ -49,8 +50,11 @@ pub fn print_uptime(monitor: &SystemMonitor) {
     let days = uptime / 86400;
     let hours = (uptime % 86400) / 3600;
     let minutes = (uptime % 3600) / 60;
-    
-    println!("Uptime:     {} days, {} hours, {} minutes", days, hours, minutes);
+
+    println!(
+        "Uptime:     {} days, {} hours, {} minutes",
+        days, hours, minutes
+    );
 }
 
 /// Print the footer
@@ -60,17 +64,17 @@ pub fn print_footer() {
 }
 
 /// Create a visual progress bar
-/// 
+///
 /// # Arguments
 /// * `percentage` - Value between 0 and 100
 /// * `width` - Total width of the bar in characters
-/// 
+///
 /// # Returns
 /// A string containing the visual bar like [████░░░░]
 fn create_bar(percentage: f32, width: usize) -> String {
     let filled = ((percentage / 100.0) * width as f32) as usize;
     let empty = width.saturating_sub(filled);
-    
+
     format!("[{}{}]", "█".repeat(filled), "░".repeat(empty))
 }
 

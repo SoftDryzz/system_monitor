@@ -1,9 +1,9 @@
 // System monitoring module
 // Main facade for accessing all system information
 
-use sysinfo::System;
 use super::cpu::CpuInfo;
 use super::memory::MemoryInfo;
+use sysinfo::System;
 
 /// Main system monitor facade
 pub struct SystemMonitor {

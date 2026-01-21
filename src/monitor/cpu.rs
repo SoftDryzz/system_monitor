@@ -1,7 +1,7 @@
 // CPU monitoring module
 // Provides CPU usage information per core and globally
 
-use sysinfo::{System, Cpu};
+use sysinfo::System;
 
 /// CPU information structure
 #[derive(Debug)]
@@ -21,8 +21,9 @@ impl CpuInfo {
     /// Get CPU information from system
     pub fn from_system(sys: &System) -> Self {
         let global_usage = sys.global_cpu_usage();
-        
-        let cores = sys.cpus()
+
+        let cores = sys
+            .cpus()
             .iter()
             .enumerate()
             .map(|(index, cpu)| CoreInfo {
