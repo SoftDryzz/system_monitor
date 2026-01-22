@@ -46,6 +46,7 @@ fn single_snapshot(monitor: &mut SystemMonitor, detailed: bool) {
     formatter::print_cpu_info(monitor, detailed);
     formatter::print_memory_info(monitor);
     formatter::print_disk_info(monitor);
+    formatter::print_network_info(monitor);
     formatter::print_top_processes_cpu(monitor, detailed);
     formatter::print_top_processes_memory(monitor, detailed);
     formatter::print_uptime(monitor);
@@ -74,6 +75,7 @@ fn watch_mode(
         formatter::print_cpu_info(monitor, detailed);
         formatter::print_memory_info(monitor);
         formatter::print_disk_info(monitor);
+        formatter::print_network_info(monitor);
         formatter::print_top_processes_cpu(monitor, detailed);
         formatter::print_top_processes_memory(monitor, detailed);
         formatter::print_uptime(monitor);

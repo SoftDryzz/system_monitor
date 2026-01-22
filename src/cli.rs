@@ -7,7 +7,7 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(
     name = "sysmon",
-    version = "0.3.0",
+    version = "0.4.0",
     author = "SoftDryzz",
     about = "A cross-platform CLI system monitoring tool",
     long_about = None
