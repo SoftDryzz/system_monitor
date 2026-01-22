@@ -1,28 +1,19 @@
-# System Monitor - User Guide
+# System Monitor - Complete User Guide
 
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [Installation](#installation)
-3. [Basic Usage](#basic-usage)
-4. [Understanding the Output](#understanding-the-output)
-5. [Development](#development)
-6. [Troubleshooting](#troubleshooting)
-7. [Contributing](#contributing)
+**Version 0.3.0**
 
 ---
 
-## Introduction
+## Table of Contents
 
-System Monitor (`sysmon`) is a lightweight, cross-platform command-line tool for monitoring system resources. Built with Rust, it provides real-time information about your CPU, memory, and system uptime with minimal resource overhead.
-
-### Key Features
-
-- **Real-time CPU monitoring** per core
-- **Memory usage tracking** with visual indicators
-- **System uptime** display
-- **Cross-platform** support (Windows, Linux, macOS)
-- **Lightweight** and fast execution
+1. [Installation](#installation)
+2. [Quick Start](#quick-start)
+3. [Features & Usage](#features--usage)
+4. [Understanding Output](#understanding-output)
+5. [Watch Mode](#watch-mode)
+6. [Development](#development)
+7. [Troubleshooting](#troubleshooting)
+8. [Contributing](#contributing)
 
 ---
 
@@ -30,256 +21,453 @@ System Monitor (`sysmon`) is a lightweight, cross-platform command-line tool for
 
 ### Prerequisites
 
-Before installing System Monitor, ensure you have:
+- **Rust 1.70+**: [Install from rustup.rs](https://rustup.rs/)
+- **Git** (optional): For cloning the repository
 
-- **Rust 1.70 or higher**: [Install Rust](https://www.rust-lang.org/tools/install)
-- **Git** (optional, for cloning): [Install Git](https://git-scm.com/downloads)
-
-### Installation Methods
-
-#### Method 1: Build from Source
+### Method 1: Build from Source
 
 ```bash
-# Clone the repository
 git clone https://github.com/SoftDryzz/system_monitor.git
 cd system_monitor
-
-# Build the release version
 cargo build --release
-
-# The binary will be in target/release/sysmon (or sysmon.exe on Windows)
+# Binary: target/release/sysmon
 ```
 
-#### Method 2: Install with Cargo
+### Method 2: Download Binary
+
+Download pre-compiled binaries from [Releases](https://github.com/SoftDryzz/system_monitor/releases):
+- `sysmon-windows-x86_64.exe` (Windows)
+- `sysmon-linux-x86_64` (Linux)
+- `sysmon-macos-x86_64` (macOS)
+
+### Method 3: Install with Cargo
 
 ```bash
-# Install directly from the project directory
 cargo install --path .
-
-# This installs sysmon to ~/.cargo/bin (or %USERPROFILE%\.cargo\bin on Windows)
-# Make sure this directory is in your PATH
+# Installs to ~/.cargo/bin (must be in PATH)
 ```
-
-#### Method 3: Download Binary (Future)
-
-Pre-compiled binaries will be available in future releases on GitHub.
 
 ---
 
-## Basic Usage
+## Quick Start
 
-### Running System Monitor
+### Basic Commands
 
-Simply run the command:
+```bash
+# Single snapshot (compact mode)
+sysmon
+
+# Detailed view (all cores, more processes)
+sysmon --detailed
+
+# Watch mode (continuous updates)
+sysmon --watch
+
+# Watch with custom interval
+sysmon --watch --interval 3
+
+# Watch detailed mode
+sysmon --watch --detailed
+
+# Show help
+sysmon --help
+```
+
+---
+
+## Features & Usage
+
+### 1. CPU Monitoring
+
+#### Compact Mode (Default)
+Shows CPU percentage and top 3 busiest cores.
 
 ```bash
 sysmon
 ```
 
-This will display a snapshot of your system's current state.
-
-### Command-Line Options
-
-```bash
-# Display help
-sysmon --help
-
-# Display version
-sysmon --version
+**Output:**
+```
+CPU:  34.5% (8 cores)  [██████░░░░░░░░░░░░░░]
+  Top 3: Core 0 (52%) Core 4 (48%) Core 7 (46%)
 ```
 
-**Note**: More options like `--watch` mode and custom intervals will be added in future versions.
+**Why Compact?**
+- Works great with 4-128+ cores
+- Shows what matters most
+- Fits on one screen
+
+#### Detailed Mode
+Shows all individual cores.
+
+```bash
+sysmon --detailed
+```
+
+**Output:**
+```
+CPU:  34.5% (8 cores)  [██████░░░░░░░░░░░░░░]
+  Core  0:   52.0%  [███████████░░░░]
+  Core  1:   48.0%  [██████████░░░░░]
+  Core  2:   35.0%  [███████░░░░░░░░]
+  ...all 8 cores shown...
+```
 
 ---
 
-## Understanding the Output
+### 2. Memory Monitoring
 
-### Example Output
+Displays RAM usage with visual bar.
 
 ```
-╭─────────────────────────────────────╮
-│   System Monitor v0.1.0             │
-╰─────────────────────────────────────╯
-
-CPU Usage:  34.5%  [██████░░░░░░░░░░░░░░]
-  Core  0:   45.2%  [██████░░░░░░░░░]
-  Core  1:   28.3%  [████░░░░░░░░░░░]
-  Core  2:   31.1%  [████░░░░░░░░░░░]
-  Core  3:   33.8%  [█████░░░░░░░░░░]
-
-Memory:     8.34/16.00 GB (52.1%)
-            [██████████░░░░░░░░░░]
-
-Uptime:     2 days, 0 hours, 32 minutes
-
-Press Ctrl+C to exit
+Memory:  8.34/16.00 GB (52.1%)  [██████████░░░░░░░░░░]
 ```
 
-### Output Components
+**Interpretation:**
+- < 50%: Healthy
+- 50-80%: Normal usage
+- \> 80%: High usage (may slow down system)
 
-#### 1. Header
-Shows the program name and version.
+---
 
-#### 2. CPU Usage
-- **Overall CPU Usage**: Average across all cores
-- **Per-Core Usage**: Individual usage for each CPU core
-- **Visual Bar**: `█` represents used capacity, `░` represents available capacity
+### 3. Disk Usage
 
-**Interpretation**:
-- 0-30%: Low usage (idle)
-- 30-70%: Moderate usage (normal)
-- 70-100%: High usage (heavy load)
+Shows space usage for all mounted drives.
 
-#### 3. Memory Usage
-- **Used/Total**: RAM currently in use vs. total available
-- **Percentage**: Memory utilization as a percentage
-- **Visual Bar**: Similar to CPU bar
+```
+Disk Usage:
+  C:\       450.0/1000.0 GB ( 45.0%)  [███████░░░░░░░░]
+  D:\       200.0/ 500.0 GB ( 40.0%)  [██████░░░░░░░░░]
+```
 
-**Interpretation**:
-- <50%: Healthy
-- 50-80%: Moderate usage
-- >80%: High usage (may impact performance)
+**Notes:**
+- Filters out small virtual drives (< 1GB)
+- Includes all physical and network drives
+- GB formatting for easy reading
 
-#### 4. System Uptime
-Shows how long the system has been running since last boot.
+---
+
+### 4. Process Monitoring
+
+#### Top Processes by CPU
+
+**Compact Mode** (5 processes):
+```
+Top 5 Processes (by CPU):
+   1. firefox.exe        PID  1234   25.2%    2.5 GB
+   2. chrome.exe         PID  5678   15.1%    1.8 GB
+   3. Code.exe           PID  9012   10.4%    1.2 GB
+   4. Discord.exe        PID  3456    8.3%    800 MB
+   5. Spotify.exe        PID  7890    5.2%    650 MB
+```
+
+**Detailed Mode** (10 processes):
+```bash
+sysmon --detailed
+```
+
+#### Top Processes by Memory
+
+**Compact Mode** (3 processes):
+```
+Top 3 Processes (by Memory):
+   1. chrome.exe         PID  5678   15.1%    2.8 GB
+   2. firefox.exe        PID  1234   25.2%    2.5 GB
+   3. Code.exe           PID  9012   10.4%    1.2 GB
+```
+
+**Detailed Mode** (5 processes):
+```bash
+sysmon --detailed
+```
+
+**Understanding Process Info:**
+- **Name**: Process executable name
+- **PID**: Process ID
+- **CPU%**: Current CPU usage
+- **Memory**: RAM usage (auto MB/GB)
+
+---
+
+### 5. System Uptime
+
+Shows time since last boot.
+
+```
+Uptime: 2 days, 0 hours, 32 minutes
+```
+
+**Why It Matters:**
+- Check system stability
+- Know when restart is needed
+- Troubleshoot issues
+
+---
+
+### 6. Watch Mode
+
+Continuous monitoring with real-time updates.
+
+#### Basic Watch
+
+```bash
+sysmon --watch
+```
+
+**Behavior:**
+- Updates every 1 second (default)
+- Clears screen between updates
+- Shows "Watch" in header
+- Press **Ctrl+C** to exit cleanly
+
+#### Custom Interval
+
+```bash
+# Update every 3 seconds
+sysmon --watch --interval 3
+
+# Update every 5 seconds
+sysmon -w -i 5
+```
+
+**Recommended Intervals:**
+- 1s: Real-time monitoring
+- 2-3s: Normal usage
+- 5s+: Low-impact monitoring
+
+#### Watch + Detailed
+
+```bash
+sysmon --watch --detailed
+```
+
+Combines continuous updates with full information.
+
+---
+
+## Understanding Output
+
+### Visual Bars
+
+```
+[██████████░░░░░░░░░░]
+ ↑ filled  ↑ empty
+```
+
+- **█**: Used/occupied
+- **░**: Free/available
+- Length: 20 characters (100% = 20 filled)
+
+### Percentages
+
+- **0-30%**: Low (green zone)
+- **30-70%**: Moderate (yellow zone)
+- **70-100%**: High (red zone)
+
+### Memory Units
+
+- **MB**: < 1024 MB
+- **GB**: ≥ 1024 MB
+
+Auto-converts for readability.
+
+---
+
+## Watch Mode Technical Details
+
+### How It Works
+
+```
+1. Parse arguments
+2. Setup Ctrl+C handler
+3. Loop:
+   a. Clear screen
+   b. Refresh system data
+   c. Display info
+   d. Sleep interval
+   e. Check Ctrl+C
+4. Exit cleanly
+```
+
+### Ctrl+C Handling
+
+- **Responsive**: Checks every 100ms
+- **Graceful**: Prints exit message
+- **Thread-safe**: Uses atomic boolean
+
+### Screen Clearing
+
+**Platform-specific implementation:**
+
+- **Windows**: Uses `cmd /c cls`
+- **Linux/macOS**: Uses ANSI escape codes
+
+Works across all major terminals:
+- PowerShell
+- Windows Terminal
+- Git Bash
+- Bash/Zsh
+- Terminal.app
 
 ---
 
 ## Development
+
+### Build Commands
+
+```bash
+# Debug build (fast compilation)
+cargo build
+
+# Release build (optimized)
+cargo build --release
+
+# Check without building
+cargo check
+
+# Run
+cargo run
+
+# Run with arguments
+cargo run -- --watch --detailed
+```
+
+### Testing
+
+```bash
+# Run all tests
+cargo test
+
+# Run with output
+cargo test -- --nocapture
+
+# Specific test
+cargo test test_create_bar
+```
+
+### Code Quality
+
+```bash
+# Format code
+cargo fmt
+
+# Lint code
+cargo clippy
+
+# Check format
+cargo fmt -- --check
+```
 
 ### Project Structure
 
 ```
 system_monitor/
 ├── src/
-│   ├── main.rs              # Entry point
-│   ├── cli.rs               # CLI argument parsing
-│   ├── monitor/             # System monitoring logic
-│   │   ├── mod.rs
-│   │   ├── cpu.rs           # CPU monitoring
-│   │   ├── memory.rs        # Memory monitoring
-│   │   └── system.rs        # System facade
-│   └── display/             # Output formatting
+│   ├── main.rs                 # Entry point
+│   ├── cli.rs                  # Argument parsing
+│   ├── monitor/
+│   │   ├── mod.rs              # Module exports
+│   │   ├── cpu.rs              # CPU monitoring
+│   │   ├── memory.rs           # Memory monitoring
+│   │   ├── disk.rs             # Disk monitoring
+│   │   ├── process.rs          # Process monitoring
+│   │   └── system.rs           # System facade
+│   └── display/
 │       ├── mod.rs
-│       └── formatter.rs     # Display utilities
-├── Cargo.toml               # Project dependencies
-└── README.md                # Documentation
+│       └── formatter.rs        # Output formatting
+├── Cargo.toml                  # Dependencies
+├── README.md                   # Documentation
+└── LICENSE                     # MIT License
 ```
 
-### Building for Development
+### Key Rust Concepts
 
-```bash
-# Build debug version (faster compilation, slower execution)
-cargo build
-
-# Run debug version
-cargo run
-
-# Check code without building
-cargo check
-
-# Run with Rust linter
-cargo clippy
+#### Ownership & Borrowing
+```rust
+// monitor borrows SystemMonitor
+pub fn print_cpu_info(monitor: &SystemMonitor, detailed: bool) {
+    // Read-only access
+}
 ```
 
-### Building for Production
-
-```bash
-# Build optimized release version
-cargo build --release
-
-# The binary will be significantly faster and smaller
+#### Modules
+```rust
+mod monitor;        // Declare module
+use monitor::cpu;   // Import from module
+pub mod cpu;        // Public module
 ```
 
-### Running Tests
-
-```bash
-# Run all tests
-cargo test
-
-# Run tests with output
-cargo test -- --nocapture
-
-# Run specific test
-cargo test test_create_bar
+#### Pattern Matching
+```rust
+if args.watch {
+    watch_mode(...);
+} else {
+    single_snapshot(...);
+}
 ```
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
+### Installation Issues
 
-#### Issue: "cargo: command not found"
+#### "cargo: command not found"
 
-**Solution**: Ensure Rust is installed and in your PATH.
+**Solution**: Add Rust to PATH
 
+**Linux/macOS:**
 ```bash
-# Linux/macOS: Add to ~/.bashrc or ~/.zshrc
 export PATH="$HOME/.cargo/bin:$PATH"
-
-# Windows: Add to PATH environment variable
-%USERPROFILE%\.cargo\bin
+source ~/.bashrc  # or ~/.zshrc
 ```
 
-#### Issue: Permission Denied (Linux/macOS)
+**Windows:**
+Add to PATH: `%USERPROFILE%\.cargo\bin`
 
-**Solution**: Make the binary executable.
+#### Build Fails
 
-```bash
-chmod +x target/release/sysmon
-```
-
-#### Issue: Build Fails
-
-**Solution**: Update Rust to the latest version.
-
+**Solution 1**: Update Rust
 ```bash
 rustup update
 ```
 
-#### Issue: Inaccurate CPU/Memory Readings
-
-**Note**: First reading after starting may be less accurate. This is normal behavior due to the way system metrics are gathered.
+**Solution 2**: Clean and rebuild
+```bash
+cargo clean
+cargo build --release
+```
 
 ---
 
-## Advanced Topics
+### Runtime Issues
 
-### Understanding the Code
+#### Inaccurate First Reading
 
-#### Ownership and Borrowing
+**Cause**: System info needs warmup
+**Solution**: Normal behavior, wait 1-2 seconds
 
-System Monitor demonstrates Rust's ownership system:
+#### Screen Not Clearing (Watch Mode)
 
-```rust
-// The SystemMonitor owns the System instance
-pub struct SystemMonitor {
-    sys: System,  // Owned data
-}
+**Cause**: Terminal doesn't support clearing
+**Solution**: Try different terminal:
+- Windows Terminal (recommended)
+- PowerShell 7+
+- Git Bash
 
-// Functions borrow data with &
-pub fn print_cpu_info(monitor: &SystemMonitor) {
-    // monitor is borrowed, not owned
-}
+#### High CPU Usage
+
+**Cause**: Too fast refresh interval
+**Solution**: Use longer interval
+```bash
+sysmon --watch --interval 2
 ```
 
-#### Module System
+#### Permission Denied (Linux/macOS)
 
-The project uses Rust's module system for organization:
-
-- `mod.rs`: Declares submodules
-- Each file is a module
-- `pub` keyword makes items public
-
-#### Error Handling
-
-Future versions will use Result types:
-
-```rust
-pub fn refresh(&mut self) -> Result<(), Error> {
-    // Error handling logic
-}
+**Solution**: Make executable
+```bash
+chmod +x target/release/sysmon
 ```
 
 ---
@@ -288,50 +476,81 @@ pub fn refresh(&mut self) -> Result<(), Error> {
 
 ### How to Contribute
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write tests
-5. Submit a pull request
+1. **Fork** the repository
+2. **Create branch**: `git checkout -b feature/amazing`
+3. **Make changes**
+4. **Test**: `cargo test && cargo clippy`
+5. **Commit**: `git commit -m 'feat: add amazing feature'`
+6. **Push**: `git push origin feature/amazing`
+7. **Pull Request**
 
-### Coding Standards
+### Commit Convention
 
-- Follow Rust style guidelines (`rustfmt`)
-- Write documentation comments (`///`)
-- Add tests for new features
-- Keep functions small and focused
+Follow [Conventional Commits](https://conventionalcommits.org):
 
-### Future Features
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `refactor:` Code refactoring
+- `test:` Tests
+- `chore:` Maintenance
 
-Want to contribute? Here are some ideas:
+**Examples:**
+```bash
+feat: add network statistics
+fix: correct memory calculation on Windows
+docs: update installation guide
+refactor: simplify CPU display logic
+```
 
-- [ ] Watch mode (continuous updates)
-- [ ] Disk usage monitoring
-- [ ] Network statistics
-- [ ] Process list (top N)
-- [ ] Export to JSON/CSV
-- [ ] Interactive TUI
+### Code Standards
+
+- Format: `cargo fmt`
+- Lint: `cargo clippy`
+- Test: `cargo test`
+- Document: Use `///` comments
+
+---
+
+## Roadmap
+
+### v0.4.0 (Next)
+- Network statistics (download/upload speed)
+- Export to JSON/CSV
+- Color-coded warnings
+- Process filtering
+
+### v0.5.0 (Future)
+- Interactive TUI mode
+- Historical data tracking
+- Configuration file
+- Custom themes
+
+### v1.0.0 (Stable)
+- All core features complete
+- Full documentation
+- Comprehensive tests
+- Performance optimizations
 
 ---
 
 ## Resources
 
 ### Learning Rust
-
 - [The Rust Book](https://doc.rust-lang.org/book/)
 - [Rust by Example](https://doc.rust-lang.org/rust-by-example/)
-- [Rustlings](https://github.com/rust-lang/rustlings) - Interactive exercises
+- [Rustlings](https://github.com/rust-lang/rustlings)
 
-### Libraries Used
-
+### Dependencies
 - [sysinfo](https://docs.rs/sysinfo/) - System information
-- [clap](https://docs.rs/clap/) - Command-line parsing
+- [clap](https://docs.rs/clap/) - CLI parsing
+- [crossterm](https://docs.rs/crossterm/) - Terminal control
+- [ctrlc](https://docs.rs/ctrlc/) - Signal handling
 
-### Related Projects
-
+### Similar Projects
 - [htop](https://htop.dev/) - Interactive process viewer
-- [bottom](https://github.com/ClementTsang/bottom) - System monitor in Rust
-- [gtop](https://github.com/aksakalli/gtop) - System monitor in Node.js
+- [bottom](https://github.com/ClementTsang/bottom) - Rust system monitor
+- [gtop](https://github.com/aksakalli/gtop) - Node.js system monitor
 
 ---
 
@@ -343,4 +562,25 @@ Want to contribute? Here are some ideas:
 
 ---
 
+## FAQ
+
+**Q: Why Rust?**
+A: Maximum performance, memory safety, zero-cost abstractions.
+
+**Q: Does it support ARM processors?**
+A: Yes, Rust and sysinfo support ARM (Raspberry Pi, M1/M2 Macs).
+
+**Q: Can I monitor remote systems?**
+A: Not yet. Planned for future versions.
+
+**Q: How much overhead does it add?**
+A: < 1% CPU, ~5-10 MB RAM. Minimal impact.
+
+**Q: Is it better than Task Manager?**
+A: Different use case. Lightweight, scriptable, cross-platform.
+
+---
+
 **Happy Monitoring! 📊**
+
+Version 0.3.0 | [GitHub](https://github.com/SoftDryzz/system_monitor) | [Changelog](CHANGELOG.md)
