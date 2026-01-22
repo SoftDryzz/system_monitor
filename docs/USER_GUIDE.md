@@ -1,6 +1,6 @@
 # System Monitor - Complete User Guide
 
-**Version 0.3.0**
+**Version 0.4.0**
 
 ---
 
@@ -9,11 +9,12 @@
 1. [Installation](#installation)
 2. [Quick Start](#quick-start)
 3. [Features & Usage](#features--usage)
-4. [Understanding Output](#understanding-output)
-5. [Watch Mode](#watch-mode)
-6. [Development](#development)
-7. [Troubleshooting](#troubleshooting)
-8. [Contributing](#contributing)
+4. [Color Coding](#color-coding)
+5. [Network Statistics](#network-statistics)
+6. [Watch Mode](#watch-mode)
+7. [Development](#development)
+8. [Troubleshooting](#troubleshooting)
+9. [Contributing](#contributing)
 
 ---
 
@@ -54,7 +55,7 @@ cargo install --path .
 ### Basic Commands
 
 ```bash
-# Single snapshot (compact mode)
+# Single snapshot with colors
 sysmon
 
 # Detailed view (all cores, more processes)
@@ -80,7 +81,7 @@ sysmon --help
 ### 1. CPU Monitoring
 
 #### Compact Mode (Default)
-Shows CPU percentage and top 3 busiest cores.
+Shows CPU percentage and top 3 busiest cores with color coding.
 
 ```bash
 sysmon
@@ -89,107 +90,89 @@ sysmon
 **Output:**
 ```
 CPU:  34.5% (8 cores)  [██████░░░░░░░░░░░░░░]
+      ↑ Yellow (moderate usage)
   Top 3: Core 0 (52%) Core 4 (48%) Core 7 (46%)
+         ↑ Red     ↑ Yellow  ↑ Yellow
 ```
 
-**Why Compact?**
-- Works great with 4-128+ cores
-- Shows what matters most
-- Fits on one screen
-
 #### Detailed Mode
-Shows all individual cores.
+Shows all individual cores with colors.
 
 ```bash
 sysmon --detailed
-```
-
-**Output:**
-```
-CPU:  34.5% (8 cores)  [██████░░░░░░░░░░░░░░]
-  Core  0:   52.0%  [███████████░░░░]
-  Core  1:   48.0%  [██████████░░░░░]
-  Core  2:   35.0%  [███████░░░░░░░░]
-  ...all 8 cores shown...
 ```
 
 ---
 
 ### 2. Memory Monitoring
 
-Displays RAM usage with visual bar.
+Displays RAM usage with visual bar and color coding.
 
 ```
 Memory:  8.34/16.00 GB (52.1%)  [██████████░░░░░░░░░░]
+         ↑ Yellow (moderate)
 ```
-
-**Interpretation:**
-- < 50%: Healthy
-- 50-80%: Normal usage
-- \> 80%: High usage (may slow down system)
 
 ---
 
 ### 3. Disk Usage
 
-Shows space usage for all mounted drives.
+Shows space usage for all mounted drives with colors.
 
 ```
 Disk Usage:
-  C:\       450.0/1000.0 GB ( 45.0%)  [███████░░░░░░░░]
-  D:\       200.0/ 500.0 GB ( 40.0%)  [██████░░░░░░░░░]
+  C:\       450.0/1000.0 GB ( 45.0%)  [███████░░░░░░░░]  ← Yellow
+  D:\       850.0/1000.0 GB ( 85.0%)  [█████████████░░]  ← Red (high!)
 ```
-
-**Notes:**
-- Filters out small virtual drives (< 1GB)
-- Includes all physical and network drives
-- GB formatting for easy reading
 
 ---
 
 ### 4. Process Monitoring
 
-#### Top Processes by CPU
-
-**Compact Mode** (5 processes):
+#### Top Processes by CPU (color-coded)
 ```
 Top 5 Processes (by CPU):
-   1. firefox.exe        PID  1234   25.2%    2.5 GB
+   1. firefox.exe        PID  1234   25.2%    2.5 GB  ← Red
    2. chrome.exe         PID  5678   15.1%    1.8 GB
-   3. Code.exe           PID  9012   10.4%    1.2 GB
-   4. Discord.exe        PID  3456    8.3%    800 MB
-   5. Spotify.exe        PID  7890    5.2%    650 MB
+   3. Code.exe           PID  9012   10.4%    1.2 GB  ← Green
 ```
 
-**Detailed Mode** (10 processes):
-```bash
-sysmon --detailed
-```
-
-#### Top Processes by Memory
-
-**Compact Mode** (3 processes):
+#### Top Processes by Memory (color-coded)
 ```
 Top 3 Processes (by Memory):
-   1. chrome.exe         PID  5678   15.1%    2.8 GB
-   2. firefox.exe        PID  1234   25.2%    2.5 GB
-   3. Code.exe           PID  9012   10.4%    1.2 GB
+   1. chrome.exe         PID  5678   15.1%    2.8 GB  ← Red (>2GB)
+   2. firefox.exe        PID  1234   25.2%    2.5 GB  ← Red
+   3. Code.exe           PID  9012   10.4%    512 MB  ← Green (<512MB)
 ```
-
-**Detailed Mode** (5 processes):
-```bash
-sysmon --detailed
-```
-
-**Understanding Process Info:**
-- **Name**: Process executable name
-- **PID**: Process ID
-- **CPU%**: Current CPU usage
-- **Memory**: RAM usage (auto MB/GB)
 
 ---
 
-### 5. System Uptime
+### 5. Network Statistics
+
+Real-time network traffic monitoring with speed calculation.
+
+```
+Network:
+  ↓ Download: 15.2 MB/s   ← Green (active download)
+  ↑ Upload:   2.3 MB/s    ← Green (active upload)
+  Total RX:   45.7 GB
+  Total TX:   12.3 GB
+```
+
+**Features:**
+- Real-time download/upload speeds
+- Automatic unit conversion (B/s, KB/s, MB/s, GB/s)
+- Total bytes received (RX) and transmitted (TX)
+- Color indicators for active network usage
+
+**How Speed is Calculated:**
+1. First reading captures current totals
+2. Subsequent readings calculate delta over time interval
+3. Speed = (bytes_now - bytes_before) / time_elapsed
+
+---
+
+### 6. System Uptime
 
 Shows time since last boot.
 
@@ -197,117 +180,127 @@ Shows time since last boot.
 Uptime: 2 days, 0 hours, 32 minutes
 ```
 
-**Why It Matters:**
-- Check system stability
-- Know when restart is needed
-- Troubleshoot issues
+---
+
+## Color Coding
+
+### Usage-Based Colors
+
+System Monitor uses a consistent color scheme across all metrics:
+
+| Color | Percentage | Meaning | Action |
+|-------|------------|---------|--------|
+| 🟢 **Green** | 0-30% | Healthy | All good |
+| 🟡 **Yellow** | 30-70% | Moderate | Normal usage |
+| 🔴 **Red** | 70-100% | High | May need attention |
+
+### Where Colors Are Applied
+
+| Component | What's Colored |
+|-----------|----------------|
+| CPU | Global percentage, per-core percentages |
+| Memory | Usage percentage |
+| Disk | Usage percentage per drive |
+| Processes | CPU percentage, Memory size |
+| Network | Speed indicators (green when active) |
+| Headers | Section titles (cyan) |
+
+### Memory-Specific Colors (Processes)
+
+For process memory display:
+- 🟢 Green: < 512 MB
+- 🟡 Yellow: 512 MB - 2 GB
+- 🔴 Red: > 2 GB
+
+### Network-Specific Colors
+
+- 🟢 Green: Download > 10 MB/s or Upload > 1 MB/s (active)
+- ⚪ White: Low or no activity
+
+### Terminal Compatibility
+
+Colors work best on:
+- **Windows Terminal** ⭐⭐⭐⭐⭐
+- **PowerShell 7+** ⭐⭐⭐⭐
+- **Git Bash** ⭐⭐⭐
+- **Linux terminals** ⭐⭐⭐⭐⭐
+- **macOS Terminal** ⭐⭐⭐⭐
+- **CMD** ⭐⭐ (basic support)
+
+If colors don't display, the `colored` crate falls back gracefully.
 
 ---
 
-### 6. Watch Mode
+## Network Statistics
 
-Continuous monitoring with real-time updates.
+### Understanding Network Output
 
-#### Basic Watch
+```
+Network:
+  ↓ Download: 5.2 MB/s     # Current download speed
+  ↑ Upload:   1.3 MB/s     # Current upload speed
+  Total RX:   2.5 GB       # Total received since boot
+  Total TX:   850 MB       # Total transmitted since boot
+```
+
+### Speed Units
+
+Automatically converted based on value:
+- **B/s** - Bytes per second (< 1 KB/s)
+- **KB/s** - Kilobytes per second (< 1 MB/s)
+- **MB/s** - Megabytes per second (< 1 GB/s)
+- **GB/s** - Gigabytes per second (very fast connections)
+
+### Total Units
+
+- **B** - Bytes
+- **KB** - Kilobytes
+- **MB** - Megabytes
+- **GB** - Gigabytes
+- **TB** - Terabytes
+
+### Notes
+
+- First reading shows 0 speed (needs delta)
+- Aggregates all network interfaces
+- Updates with each refresh in watch mode
+
+---
+
+## Watch Mode
+
+### Basic Watch
 
 ```bash
 sysmon --watch
 ```
 
-**Behavior:**
-- Updates every 1 second (default)
-- Clears screen between updates
-- Shows "Watch" in header
-- Press **Ctrl+C** to exit cleanly
+Updates every 1 second by default.
 
-#### Custom Interval
+### Custom Interval
 
 ```bash
-# Update every 3 seconds
 sysmon --watch --interval 3
-
-# Update every 5 seconds
 sysmon -w -i 5
 ```
 
-**Recommended Intervals:**
-- 1s: Real-time monitoring
-- 2-3s: Normal usage
-- 5s+: Low-impact monitoring
-
-#### Watch + Detailed
+### Watch + Detailed
 
 ```bash
 sysmon --watch --detailed
+sysmon -w -d
 ```
 
-Combines continuous updates with full information.
+### Exit Watch Mode
 
----
+Press **Ctrl+C** for clean exit.
 
-## Understanding Output
+### Network in Watch Mode
 
-### Visual Bars
-
-```
-[██████████░░░░░░░░░░]
- ↑ filled  ↑ empty
-```
-
-- **█**: Used/occupied
-- **░**: Free/available
-- Length: 20 characters (100% = 20 filled)
-
-### Percentages
-
-- **0-30%**: Low (green zone)
-- **30-70%**: Moderate (yellow zone)
-- **70-100%**: High (red zone)
-
-### Memory Units
-
-- **MB**: < 1024 MB
-- **GB**: ≥ 1024 MB
-
-Auto-converts for readability.
-
----
-
-## Watch Mode Technical Details
-
-### How It Works
-
-```
-1. Parse arguments
-2. Setup Ctrl+C handler
-3. Loop:
-   a. Clear screen
-   b. Refresh system data
-   c. Display info
-   d. Sleep interval
-   e. Check Ctrl+C
-4. Exit cleanly
-```
-
-### Ctrl+C Handling
-
-- **Responsive**: Checks every 100ms
-- **Graceful**: Prints exit message
-- **Thread-safe**: Uses atomic boolean
-
-### Screen Clearing
-
-**Platform-specific implementation:**
-
-- **Windows**: Uses `cmd /c cls`
-- **Linux/macOS**: Uses ANSI escape codes
-
-Works across all major terminals:
-- PowerShell
-- Windows Terminal
-- Git Bash
-- Bash/Zsh
-- Terminal.app
+Watch mode is ideal for network monitoring:
+- Speed updates with each refresh
+- Shows real-time bandwidth usage
+- Delta calculation becomes accurate after first interval
 
 ---
 
@@ -316,46 +309,23 @@ Works across all major terminals:
 ### Build Commands
 
 ```bash
-# Debug build (fast compilation)
+# Debug build
 cargo build
 
 # Release build (optimized)
 cargo build --release
 
-# Check without building
-cargo check
-
 # Run
 cargo run
-
-# Run with arguments
 cargo run -- --watch --detailed
 ```
 
 ### Testing
 
 ```bash
-# Run all tests
 cargo test
-
-# Run with output
-cargo test -- --nocapture
-
-# Specific test
-cargo test test_create_bar
-```
-
-### Code Quality
-
-```bash
-# Format code
-cargo fmt
-
-# Lint code
 cargo clippy
-
-# Check format
-cargo fmt -- --check
+cargo fmt
 ```
 
 ### Project Structure
@@ -370,104 +340,65 @@ system_monitor/
 │   │   ├── cpu.rs              # CPU monitoring
 │   │   ├── memory.rs           # Memory monitoring
 │   │   ├── disk.rs             # Disk monitoring
+│   │   ├── network.rs          # Network monitoring
 │   │   ├── process.rs          # Process monitoring
 │   │   └── system.rs           # System facade
 │   └── display/
 │       ├── mod.rs
-│       └── formatter.rs        # Output formatting
+│       └── formatter.rs        # Output + colors
 ├── Cargo.toml                  # Dependencies
 ├── README.md                   # Documentation
+├── CHANGELOG.md                # Version history
 └── LICENSE                     # MIT License
 ```
 
-### Key Rust Concepts
+### Key Dependencies
 
-#### Ownership & Borrowing
-```rust
-// monitor borrows SystemMonitor
-pub fn print_cpu_info(monitor: &SystemMonitor, detailed: bool) {
-    // Read-only access
-}
-```
-
-#### Modules
-```rust
-mod monitor;        // Declare module
-use monitor::cpu;   // Import from module
-pub mod cpu;        // Public module
-```
-
-#### Pattern Matching
-```rust
-if args.watch {
-    watch_mode(...);
-} else {
-    single_snapshot(...);
-}
-```
+| Crate | Purpose |
+|-------|---------|
+| sysinfo | System information |
+| clap | CLI parsing |
+| crossterm | Terminal control |
+| ctrlc | Signal handling |
+| colored | Terminal colors |
 
 ---
 
 ## Troubleshooting
 
-### Installation Issues
-
-#### "cargo: command not found"
-
-**Solution**: Add Rust to PATH
-
-**Linux/macOS:**
-```bash
-export PATH="$HOME/.cargo/bin:$PATH"
-source ~/.bashrc  # or ~/.zshrc
-```
+### Colors Not Showing
 
 **Windows:**
-Add to PATH: `%USERPROFILE%\.cargo\bin`
+- Use Windows Terminal (recommended)
+- Or enable ANSI in CMD: `reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1`
 
-#### Build Fails
+**Linux/macOS:**
+- Usually works out of the box
+- Try: `export TERM=xterm-256color`
 
-**Solution 1**: Update Rust
-```bash
-rustup update
-```
+### Network Speed Shows 0
 
-**Solution 2**: Clean and rebuild
-```bash
-cargo clean
-cargo build --release
-```
+- Normal on first reading
+- Wait for second refresh (delta calculation)
+- In watch mode, accurate after first interval
 
----
+### High CPU Usage by sysmon
 
-### Runtime Issues
+- Use longer interval: `sysmon -w -i 5`
+- Default 1s is fine for most systems
 
-#### Inaccurate First Reading
+### Permission Denied (Linux/macOS)
 
-**Cause**: System info needs warmup
-**Solution**: Normal behavior, wait 1-2 seconds
-
-#### Screen Not Clearing (Watch Mode)
-
-**Cause**: Terminal doesn't support clearing
-**Solution**: Try different terminal:
-- Windows Terminal (recommended)
-- PowerShell 7+
-- Git Bash
-
-#### High CPU Usage
-
-**Cause**: Too fast refresh interval
-**Solution**: Use longer interval
-```bash
-sysmon --watch --interval 2
-```
-
-#### Permission Denied (Linux/macOS)
-
-**Solution**: Make executable
 ```bash
 chmod +x target/release/sysmon
+```
+
+### Build Errors
+
+```bash
+rustup update
+cargo clean
+cargo build --release
 ```
 
 ---
@@ -479,7 +410,7 @@ chmod +x target/release/sysmon
 1. **Fork** the repository
 2. **Create branch**: `git checkout -b feature/amazing`
 3. **Make changes**
-4. **Test**: `cargo test && cargo clippy`
+4. **Test**: `cargo test && cargo clippy && cargo fmt`
 5. **Commit**: `git commit -m 'feat: add amazing feature'`
 6. **Push**: `git push origin feature/amazing`
 7. **Pull Request**
@@ -495,42 +426,39 @@ Follow [Conventional Commits](https://conventionalcommits.org):
 - `test:` Tests
 - `chore:` Maintenance
 
-**Examples:**
-```bash
-feat: add network statistics
-fix: correct memory calculation on Windows
-docs: update installation guide
-refactor: simplify CPU display logic
-```
-
-### Code Standards
-
-- Format: `cargo fmt`
-- Lint: `cargo clippy`
-- Test: `cargo test`
-- Document: Use `///` comments
-
 ---
 
 ## Roadmap
 
-### v0.4.0 (Next)
-- Network statistics (download/upload speed)
+### v0.5.0 (Next)
 - Export to JSON/CSV
-- Color-coded warnings
-- Process filtering
-
-### v0.5.0 (Future)
-- Interactive TUI mode
-- Historical data tracking
 - Configuration file
-- Custom themes
+- Custom color themes
+- Historical data tracking
 
 ### v1.0.0 (Stable)
 - All core features complete
 - Full documentation
 - Comprehensive tests
-- Performance optimizations
+
+---
+
+## FAQ
+
+**Q: Why are colors important?**
+A: Instant visual feedback - see problems at a glance without reading numbers.
+
+**Q: Can I disable colors?**
+A: Not currently. Feature planned for v0.5.0 config file.
+
+**Q: Network speed seems wrong?**
+A: First reading is always 0. Wait for delta calculation.
+
+**Q: Does it work on ARM?**
+A: Yes, Rust and sysinfo support ARM (Raspberry Pi, M1/M2).
+
+**Q: How much overhead?**
+A: < 1% CPU, ~5-10 MB RAM. Minimal impact.
 
 ---
 
@@ -539,48 +467,21 @@ refactor: simplify CPU display logic
 ### Learning Rust
 - [The Rust Book](https://doc.rust-lang.org/book/)
 - [Rust by Example](https://doc.rust-lang.org/rust-by-example/)
-- [Rustlings](https://github.com/rust-lang/rustlings)
 
-### Dependencies
-- [sysinfo](https://docs.rs/sysinfo/) - System information
-- [clap](https://docs.rs/clap/) - CLI parsing
-- [crossterm](https://docs.rs/crossterm/) - Terminal control
-- [ctrlc](https://docs.rs/ctrlc/) - Signal handling
-
-### Similar Projects
-- [htop](https://htop.dev/) - Interactive process viewer
-- [bottom](https://github.com/ClementTsang/bottom) - Rust system monitor
-- [gtop](https://github.com/aksakalli/gtop) - Node.js system monitor
+### Dependencies Docs
+- [sysinfo](https://docs.rs/sysinfo/)
+- [clap](https://docs.rs/clap/)
+- [colored](https://docs.rs/colored/)
 
 ---
 
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/SoftDryzz/system_monitor/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/SoftDryzz/system_monitor/discussions)
 - **Author**: [@SoftDryzz](https://github.com/SoftDryzz)
 
 ---
 
-## FAQ
+**Happy Monitoring! 📊🎨**
 
-**Q: Why Rust?**
-A: Maximum performance, memory safety, zero-cost abstractions.
-
-**Q: Does it support ARM processors?**
-A: Yes, Rust and sysinfo support ARM (Raspberry Pi, M1/M2 Macs).
-
-**Q: Can I monitor remote systems?**
-A: Not yet. Planned for future versions.
-
-**Q: How much overhead does it add?**
-A: < 1% CPU, ~5-10 MB RAM. Minimal impact.
-
-**Q: Is it better than Task Manager?**
-A: Different use case. Lightweight, scriptable, cross-platform.
-
----
-
-**Happy Monitoring! 📊**
-
-Version 0.3.0 | [GitHub](https://github.com/SoftDryzz/system_monitor) | [Changelog](https://github.com/SoftDryzz/system_monitor/blob/main/CHANGELOG.md)
+Version 0.4.0 | [GitHub](https://github.com/SoftDryzz/system_monitor) | [Changelog](CHANGELOG.md)

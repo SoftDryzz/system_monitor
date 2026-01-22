@@ -7,11 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v0.4.0
-- Network statistics (download/upload speed)
+### Planned for v0.5.0
 - Export to JSON/CSV
-- Color-coded warnings for high CPU/memory usage
+- Configuration file support
+- Custom color themes
+- Historical data tracking
 - Process filtering and search
+
+---
+
+## [0.4.0] - 2025-01-22
+
+### Added
+- **Network Statistics** - Real-time download and upload speed monitoring
+- **Network Traffic Totals** - Track total bytes received and transmitted
+- **Color-Coded UI** - Visual health indicators throughout the application
+- **Green/Yellow/Red Indicators** - Based on usage percentage thresholds
+- **Automatic Unit Conversion** - Network speed (B/s to GB/s) and bytes (B to TB)
+- **Speed Calculation** - Delta-based calculation using timestamps
+- **Colored Headers** - Cyan section titles for better organization
+- **Network Module** - New `network.rs` with `NetworkInfo` struct
+
+### Changed
+- Enhanced formatter with color support using `colored` crate
+- SystemMonitor now tracks network state for speed calculations
+- CPU, memory, disk, and process metrics now display with colors
+- Improved visual feedback on system health status
+- Version bump to 0.4.0
+
+### Technical
+- Added `colored = "2.1"` dependency for terminal colors
+- Network tracking with `Instant` timestamps for accurate speed calculation
+- `NetworkInfo::format_speed()` and `format_bytes()` utility functions
+- Color selection function based on percentage thresholds
+- Cross-platform color support (Windows, Linux, macOS)
+
+### Fixed
+- Improved readability with color-coded metrics
+- Better visual distinction between healthy and critical states
 
 ---
 
@@ -116,18 +149,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Comparison
 
-| Version | CPU | Memory | Disk | Processes | Watch | Notes |
-|---------|-----|--------|------|-----------|-------|-------|
-| 0.1.0 | ✅ | ✅ | ❌ | ❌ | ❌ | Initial release |
-| 0.2.0 | ✅ | ✅ | ❌ | ❌ | ✅ | Watch mode |
-| 0.2.1 | ✅ | ✅ | ✅ | ❌ | ✅ | Disk monitoring |
-| 0.3.0 | ✅+ | ✅ | ✅ | ✅ | ✅ | Smart scaling |
+| Version | CPU | Memory | Disk | Processes | Network | Watch | Colors |
+|---------|-----|--------|------|-----------|---------|-------|--------|
+| 0.1.0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 0.2.0 | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| 0.2.1 | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ |
+| 0.3.0 | ✅+ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| 0.4.0 | ✅+ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 **✅+** = Enhanced with compact/detailed modes
 
 ---
 
+## Feature Timeline
+
+```
+v0.1.0 ──► v0.2.0 ──► v0.2.1 ──► v0.3.0 ──► v0.4.0
+  │          │          │          │          │
+  │          │          │          │          └─ Network + Colors
+  │          │          │          └─ Processes + Intelligent Scaling
+  │          │          └─ Disk Usage
+  │          └─ Watch Mode
+  └─ Basic Monitoring (CPU, Memory, Uptime)
+```
+
+---
+
 ## Migration Guides
+
+### From 0.3.x to 0.4.0
+
+No breaking changes. All 0.3.x commands work identically.
+
+**New features available:**
+- Colors are automatically applied (no flag needed)
+- Network statistics displayed by default
+
+**Visual changes:**
+- All metrics now color-coded (green/yellow/red)
+- Network section added to output
+- Headers in cyan for better organization
 
 ### From 0.2.x to 0.3.0
 
@@ -135,19 +196,13 @@ No breaking changes. All 0.2.x commands work identically.
 
 **New features available:**
 ```bash
-# Use compact mode (default)
-sysmon
-
 # Use detailed mode (all cores, more processes)
 sysmon --detailed
-
-# Combine with watch mode
-sysmon --watch --detailed
 ```
 
 ### From 0.1.0 to 0.2.0
 
-No breaking changes. 0.1.0 behavior (single snapshot) is maintained as default.
+No breaking changes.
 
 **New features available:**
 ```bash
@@ -162,10 +217,14 @@ sysmon --watch --interval 5
 
 ## Known Issues
 
+### v0.4.0
+- First network speed reading shows 0 (requires delta calculation)
+- Colors may not display in very old terminals (falls back gracefully)
+- Some terminals may need configuration for full color support
+
 ### v0.3.0
 - First process reading may show 0% CPU (warmup needed)
 - Process names truncated to 20 characters in display
-- Memory usage reported by processes may differ from system total
 
 ### v0.2.1
 - Disk monitoring may not detect all virtual drives
@@ -176,7 +235,20 @@ sysmon --watch --interval 5
 
 ---
 
-[Unreleased]: https://github.com/SoftDryzz/system_monitor/compare/v0.3.0...HEAD
+## Dependencies
+
+| Crate | Version | Purpose |
+|-------|---------|---------|
+| sysinfo | 0.32 | System information |
+| clap | 4.5 | CLI argument parsing |
+| crossterm | 0.28 | Terminal manipulation |
+| ctrlc | 3.4 | Signal handling |
+| colored | 2.1 | Terminal colors (v0.4.0+) |
+
+---
+
+[Unreleased]: https://github.com/SoftDryzz/system_monitor/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/SoftDryzz/system_monitor/releases/tag/v0.4.0
 [0.3.0]: https://github.com/SoftDryzz/system_monitor/releases/tag/v0.3.0
 [0.2.1]: https://github.com/SoftDryzz/system_monitor/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SoftDryzz/system_monitor/releases/tag/v0.2.0
