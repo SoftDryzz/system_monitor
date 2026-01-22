@@ -2,247 +2,194 @@
 
 [![Rust](https://img.shields.io/badge/Rust-1.70+-orange.svg)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-In%20Development-yellow.svg)]()
+[![Version](https://img.shields.io/badge/Version-0.3.0-green.svg)](https://github.com/SoftDryzz/system_monitor/releases)
 
-**System Monitor** is a lightweight, cross-platform CLI tool for real-time system monitoring. Built with Rust for maximum performance and minimal resource usage.
+**System Monitor** is a lightweight, cross-platform CLI tool for real-time system monitoring with intelligent scaling. Built with Rust for maximum performance and minimal resource usage.
 
 [English](README.md) | [Español](README_ES.md)
-
-> ⚠️ **In Active Development:** This project is under construction. Features and APIs may change.
 
 ---
 
 ## ✨ Features
 
-* 🖥️ **CPU Monitoring** - Real-time CPU usage per core with visual bars
-* 💾 **Memory Tracking** - RAM usage with detailed statistics
-* ⏱️ **System Uptime** - Track how long your system has been running
-* 🎨 **Beautiful CLI Output** - Formatted with colors and progress bars
-* 🚀 **Blazing Fast** - Written in Rust for native performance
-* 🌐 **Cross-Platform** - Works on Windows, Linux, and macOS
+* 🖥️ **CPU Monitoring** - Intelligent display with compact/detailed modes
+* 💾 **Memory Tracking** - RAM usage with visual indicators
+* 💽 **Disk Usage** - Space usage for all mounted drives
+* 📊 **Process Monitoring** - Top processes by CPU and memory
+* ⏱️ **System Uptime** - Track system runtime
+* 🔄 **Watch Mode** - Continuous real-time updates
+* 🎨 **Beautiful CLI** - Formatted with progress bars
+* 🚀 **Blazing Fast** - Native Rust performance
+* 🌐 **Cross-Platform** - Windows, Linux, and macOS
 
 ---
 
-## 📋 Requirements
+## 🚀 Quick Start
 
-* Rust 1.70 or higher
-* Cargo (comes with Rust)
-
----
-
-## 🚀 Installation
-
-### From Source
+### Installation
 
 ```bash
-# Clone the repository
+# Clone and build
 git clone https://github.com/SoftDryzz/system_monitor.git
 cd system_monitor
-
-# Build the project
 cargo build --release
 
-# The binary will be in target/release/sysmon
+# Run
+./target/release/sysmon
 ```
 
-### Quick Install (Linux/macOS)
-
-```bash
-# Build and install to ~/.cargo/bin
-cargo install --path .
-
-# Now you can run from anywhere
-sysmon
-```
-
-### Windows
-
-```powershell
-# Build
-cargo build --release
-
-# The executable will be in target\release\sysmon.exe
-# Add to PATH or copy to desired location
-```
-
----
-
-## 💻 Usage
+Or download pre-compiled binaries from [Releases](https://github.com/SoftDryzz/system_monitor/releases).
 
 ### Basic Usage
 
 ```bash
-# Show current system metrics
+# Single snapshot (compact mode)
 sysmon
 
-# Output example:
-╭─────────────────────────────────────╮
-│      System Monitor v0.1.0          │
-╰─────────────────────────────────────╯
+# Detailed view (all CPU cores, more processes)
+sysmon --detailed
 
-CPU Usage:  34.5%  [██████░░░░░░░░░░░░░░]
+# Watch mode (continuous updates)
+sysmon --watch
 
-  Core  0:   45.2%  [██████░░░░░░░░░]
-
-  Core  1:   28.3%  [████░░░░░░░░░░░]
-
-  Core  2:   31.1%  [████░░░░░░░░░░░]
-
-  Core  3:   33.8%  [█████░░░░░░░░░░]
-
-Memory:     8.34/16.00 GB (52.1%)
-
-      [██████████░░░░░░░░░░]
-
-Uptime:     2 days, 0 hours, 32 minutes
+# Watch mode with details
+sysmon --watch --detailed --interval 2
 ```
 
-### Available Commands
+---
+
+## 📊 Example Output
+
+### Compact Mode (Default)
+```
+╭─────────────────────────────────────────────────────────╮
+│   System Monitor v0.3.0                                 │
+╰─────────────────────────────────────────────────────────╯
+
+CPU:  34.5% (8 cores)  [██████░░░░░░░░░░░░░░]
+  Top 3: Core 0 (52%) Core 4 (48%) Core 7 (46%)
+
+Memory:  8.34/16.00 GB (52.1%)  [██████████░░░░░░░░░░]
+
+Disk Usage:
+  C:\       450.0/1000.0 GB ( 45.0%)  [███████░░░░░░░░]
+
+Top 5 Processes (by CPU):
+   1. firefox.exe        PID  1234   25.2%    2.5 GB
+   2. chrome.exe         PID  5678   15.1%    1.8 GB
+   3. Code.exe           PID  9012   10.4%    1.2 GB
+
+Top 3 Processes (by Memory):
+   1. chrome.exe         PID  5678   15.1%    2.8 GB
+   2. firefox.exe        PID  1234   25.2%    2.5 GB
+
+Uptime: 2 days, 0 hours, 32 minutes
+```
+
+---
+
+## 💻 Commands
 
 | Command | Description |
 |---------|-------------|
-| `sysmon` | Display current system metrics |
-| `sysmon --help` | Show help information |
+| `sysmon` | Compact view (default) |
+| `sysmon --detailed` | Detailed view (all cores) |
+| `sysmon --watch` | Continuous updates |
+| `sysmon -w -i 3` | Watch with 3s interval |
+| `sysmon --help` | Show help |
 | `sysmon --version` | Show version |
 
 ---
 
-## 🏗️ Project Structure
+## 📦 What's New in v0.3.0
 
-```
-system_monitor/
-├── Cargo.toml              # Project configuration
-├── README.md               # This file
-├── README_ES.md            # Spanish documentation
-├── LICENSE                 # MIT License
-├── docs/
-│   └── USER_GUIDE.md       # Detailed user guide
-└── src/
-    ├── main.rs             # Entry point
-    ├── cli.rs              # CLI argument parsing
-    ├── monitor/            # System monitoring logic
-    │   ├── mod.rs
-    │   ├── cpu.rs          # CPU monitoring
-    │   ├── memory.rs       # Memory monitoring
-    │   └── system.rs       # System info
-    └── display/            # Output formatting
-        ├── mod.rs
-        └── formatter.rs    # Display utilities
-```
+### 🎉 Major Features
+- **Process Monitoring**: Top processes by CPU and memory
+- **Intelligent CPU Display**: Compact mode for high-core systems
+- **Detailed Mode**: Optional verbose output with `--detailed` flag
+
+### 🔧 Improvements
+- Smart scaling for systems with 4 to 128+ cores
+- Better memory formatting (MB/GB auto-conversion)
+- Enhanced CLI arguments
+
+[Full Changelog](CHANGELOG.md) | [User Guide](USER_GUIDE.md)
+
+---
+
+## 🗺️ Version History
+
+- **v0.3.0** (Current) - Process monitoring & intelligent scaling
+- **v0.2.1** - Disk usage monitoring
+- **v0.2.0** - Watch mode & continuous updates
+- **v0.1.0** - Initial release
 
 ---
 
 ## 🛠️ Development
 
 ### Build
-
 ```bash
-# Debug build
-cargo build
-
-# Release build (optimized)
 cargo build --release
 ```
 
-### Run
-
+### Test
 ```bash
-# Run in development mode
-cargo run
-
-# Run release version
-cargo run --release
-```
-
-### Check
-
-```bash
-# Check for errors without building
-cargo check
-
-# Run with warnings
+cargo test
 cargo clippy
+cargo fmt
 ```
 
----
-
-## 🗺️ Roadmap
-
-### ✅ Version 0.1.0 (Current)
-- [x] Basic CPU monitoring
-- [x] Memory usage tracking
-- [x] System uptime
-- [x] Formatted CLI output
-- [x] Cross-platform support
-
-### 🔨 Version 0.2.0 (Next)
-- [ ] Disk usage monitoring
-- [ ] Network statistics
-- [ ] Process list (top N by CPU/RAM)
-- [ ] Watch mode (continuous updates)
-- [ ] CLI arguments with clap
-
-### 🚀 Version 0.3.0 (Future)
-- [ ] Interactive TUI (Terminal UI)
-- [ ] Export metrics to JSON/CSV
-- [ ] Historical data tracking
-- [ ] Alerts and notifications
-- [ ] Custom refresh intervals
+### Project Structure
+```
+src/
+├── main.rs              # Entry point
+├── cli.rs               # CLI parsing
+├── monitor/             # System monitoring
+│   ├── cpu.rs
+│   ├── memory.rs
+│   ├── disk.rs
+│   ├── process.rs
+│   └── system.rs
+└── display/
+    └── formatter.rs     # Output formatting
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions welcome! See [USER_GUIDE.md](USER_GUIDE.md) for details.
 
+### Quick Guide
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Commit Convention
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation changes
-- `refactor:` Code refactoring
-- `test:` Adding tests
-- `chore:` Maintenance tasks
+2. Create feature branch: `git checkout -b feature/amazing`
+3. Commit changes: `git commit -m 'feat: add amazing feature'`
+4. Push and create Pull Request
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
 ## 👤 Author
 
 **SoftDryzz**
-
-* GitHub: [@SoftDryzz](https://github.com/SoftDryzz)
-* Portfolio: [More projects](https://github.com/SoftDryzz?tab=repositories)
+- GitHub: [@SoftDryzz](https://github.com/SoftDryzz)
+- Project: [system_monitor](https://github.com/SoftDryzz/system_monitor)
 
 ---
 
 ## 🙏 Acknowledgments
 
-* [sysinfo](https://github.com/GuillaumeGomez/sysinfo) - System information library
-* [clap](https://github.com/clap-rs/clap) - Command line argument parser
-* The Rust community for excellent documentation and tools
+- [sysinfo](https://github.com/GuillaumeGomez/sysinfo) - System information
+- [clap](https://github.com/clap-rs/clap) - CLI parsing
+- [crossterm](https://github.com/crossterm-rs/crossterm) - Terminal manipulation
+- [ctrlc](https://github.com/Detegr/rust-ctrlc) - Signal handling
 
 ---
 
-## 📚 Learn More
-
-* [The Rust Book](https://doc.rust-lang.org/book/) - Learn Rust
-* [User Guide](docs/USER_GUIDE.md) - Detailed usage guide
-* [Rust by Example](https://doc.rust-lang.org/rust-by-example/) - Rust examples
-
----
-
-**⭐ If you like this project, give it a star on GitHub!**
+**⭐ Star this project if you find it useful!**
