@@ -2,242 +2,194 @@
 
 [![Rust](https://img.shields.io/badge/Rust-1.70+-orange.svg)](https://www.rust-lang.org/)
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-blue.svg)](LICENSE)
-[![Estado](https://img.shields.io/badge/Estado-En%20Desarrollo-yellow.svg)]()
+[![Versión](https://img.shields.io/badge/Versión-0.3.0-green.svg)](https://github.com/SoftDryzz/system_monitor/releases)
 
-**System Monitor** es una herramienta CLI ligera y multiplataforma para monitoreo del sistema en tiempo real. Construida con Rust para máximo rendimiento y mínimo uso de recursos.
+**System Monitor** es una herramienta CLI ligera y multiplataforma para monitoreo del sistema en tiempo real con escalado inteligente. Construida con Rust para máximo rendimiento y mínimo uso de recursos.
 
 [English](README.md) | [Español](README_ES.md)
-
-> ⚠️ **En Desarrollo Activo:** Este proyecto está en construcción. Las características y APIs pueden cambiar.
 
 ---
 
 ## ✨ Características
 
-* 🖥️ **Monitoreo de CPU** - Uso de CPU en tiempo real por núcleo con barras visuales
-* 💾 **Seguimiento de Memoria** - Uso de RAM con estadísticas detalladas
-* ⏱️ **Tiempo de Actividad** - Rastrea cuánto tiempo ha estado funcionando tu sistema
-* 🎨 **Salida CLI Hermosa** - Formateada con colores y barras de progreso
-* 🚀 **Súper Rápido** - Escrito en Rust para rendimiento nativo
-* 🌐 **Multiplataforma** - Funciona en Windows, Linux y macOS
+* 🖥️ **Monitoreo de CPU** - Visualización inteligente con modos compacto/detallado
+* 💾 **Seguimiento de Memoria** - Uso de RAM con indicadores visuales
+* 💽 **Uso de Disco** - Espacio usado en todas las unidades
+* 📊 **Monitoreo de Procesos** - Top procesos por CPU y memoria
+* ⏱️ **Tiempo de Actividad** - Rastrea el tiempo de ejecución del sistema
+* 🔄 **Modo Watch** - Actualizaciones continuas en tiempo real
+* 🎨 **CLI Hermosa** - Formateada con barras de progreso
+* 🚀 **Súper Rápido** - Rendimiento nativo de Rust
+* 🌐 **Multiplataforma** - Windows, Linux y macOS
 
 ---
 
-## 📋 Requisitos
+## 🚀 Inicio Rápido
 
-* Rust 1.70 o superior
-* Cargo (viene con Rust)
-
----
-
-## 🚀 Instalación
-
-### Desde el Código Fuente
+### Instalación
 
 ```bash
-# Clonar el repositorio
+# Clonar y compilar
 git clone https://github.com/SoftDryzz/system_monitor.git
 cd system_monitor
-
-# Compilar el proyecto
 cargo build --release
 
-# El binario estará en target/release/sysmon
+# Ejecutar
+./target/release/sysmon
 ```
 
-### Instalación Rápida (Linux/macOS)
-
-```bash
-# Compilar e instalar en ~/.cargo/bin
-cargo install --path .
-
-# Ahora puedes ejecutarlo desde cualquier lugar
-sysmon
-```
-
-### Windows
-
-```powershell
-# Compilar
-cargo build --release
-
-# El ejecutable estará en target\release\sysmon.exe
-# Añadir al PATH o copiar a la ubicación deseada
-```
-
----
-
-## 💻 Uso
+O descarga binarios precompilados desde [Releases](https://github.com/SoftDryzz/system_monitor/releases).
 
 ### Uso Básico
 
 ```bash
-# Mostrar métricas actuales del sistema
+# Instantánea única (modo compacto)
 sysmon
 
-# Ejemplo de salida:
-╭─────────────────────────────────────╮
-│      System Monitor v0.1.0          │
-╰─────────────────────────────────────╯
+# Vista detallada (todos los núcleos, más procesos)
+sysmon --detailed
 
-CPU Usage:  34.5%  [██████░░░░░░░░░░░░░░]
-  Core  0:   45.2%  [██████░░░░░░░░░]
-  Core  1:   28.3%  [████░░░░░░░░░░░]
-  Core  2:   31.1%  [████░░░░░░░░░░░]
-  Core  3:   33.8%  [█████░░░░░░░░░░]
+# Modo watch (actualizaciones continuas)
+sysmon --watch
 
-Memory:     8.34/16.00 GB (52.1%)
-            [██████████░░░░░░░░░░]
-
-Uptime:     2 días, 0 horas, 32 minutos
+# Modo watch con detalles
+sysmon --watch --detailed --interval 2
 ```
 
-### Comandos Disponibles
+---
+
+## 📊 Ejemplo de Salida
+
+### Modo Compacto (Por Defecto)
+```
+╭─────────────────────────────────────────────────────────╮
+│   System Monitor v0.3.0                                 │
+╰─────────────────────────────────────────────────────────╯
+
+CPU:  34.5% (8 núcleos)  [██████░░░░░░░░░░░░░░]
+  Top 3: Núcleo 0 (52%) Núcleo 4 (48%) Núcleo 7 (46%)
+
+Memoria:  8.34/16.00 GB (52.1%)  [██████████░░░░░░░░░░]
+
+Uso de Disco:
+  C:\       450.0/1000.0 GB ( 45.0%)  [███████░░░░░░░░]
+
+Top 5 Procesos (por CPU):
+   1. firefox.exe        PID  1234   25.2%    2.5 GB
+   2. chrome.exe         PID  5678   15.1%    1.8 GB
+   3. Code.exe           PID  9012   10.4%    1.2 GB
+
+Top 3 Procesos (por Memoria):
+   1. chrome.exe         PID  5678   15.1%    2.8 GB
+   2. firefox.exe        PID  1234   25.2%    2.5 GB
+
+Tiempo Activo: 2 días, 0 horas, 32 minutos
+```
+
+---
+
+## 💻 Comandos
 
 | Comando | Descripción |
 |---------|-------------|
-| `sysmon` | Mostrar métricas actuales del sistema |
-| `sysmon --help` | Mostrar información de ayuda |
+| `sysmon` | Vista compacta (por defecto) |
+| `sysmon --detailed` | Vista detallada (todos los núcleos) |
+| `sysmon --watch` | Actualizaciones continuas |
+| `sysmon -w -i 3` | Watch con intervalo de 3s |
+| `sysmon --help` | Mostrar ayuda |
 | `sysmon --version` | Mostrar versión |
 
 ---
 
-## 🏗️ Estructura del Proyecto
+## 📦 Novedades en v0.3.0
 
-```
-system_monitor/
-├── Cargo.toml              # Configuración del proyecto
-├── README.md               # Documentación en inglés
-├── README_ES.md            # Este archivo
-├── LICENSE                 # Licencia MIT
-├── docs/
-│   └── USER_GUIDE.md       # Guía de usuario detallada
-└── src/
-    ├── main.rs             # Punto de entrada
-    ├── cli.rs              # Parseo de argumentos CLI
-    ├── monitor/            # Lógica de monitoreo
-    │   ├── mod.rs
-    │   ├── cpu.rs          # Monitoreo de CPU
-    │   ├── memory.rs       # Monitoreo de memoria
-    │   └── system.rs       # Info del sistema
-    └── display/            # Formateo de salida
-        ├── mod.rs
-        └── formatter.rs    # Utilidades de visualización
-```
+### 🎉 Características Principales
+- **Monitoreo de Procesos**: Top procesos por CPU y memoria
+- **Visualización Inteligente de CPU**: Modo compacto para sistemas con muchos núcleos
+- **Modo Detallado**: Salida verbose opcional con flag `--detailed`
+
+### 🔧 Mejoras
+- Escalado inteligente para sistemas con 4 a 128+ núcleos
+- Mejor formato de memoria (conversión automática MB/GB)
+- Argumentos CLI mejorados
+
+[Changelog Completo](CHANGELOG.md) | [Guía de Usuario](USER_GUIDE.md)
+
+---
+
+## 🗺️ Historial de Versiones
+
+- **v0.3.0** (Actual) - Monitoreo de procesos y escalado inteligente
+- **v0.2.1** - Monitoreo de uso de disco
+- **v0.2.0** - Modo watch y actualizaciones continuas
+- **v0.1.0** - Lanzamiento inicial
 
 ---
 
 ## 🛠️ Desarrollo
 
 ### Compilar
-
 ```bash
-# Compilación de depuración
-cargo build
-
-# Compilación de release (optimizada)
 cargo build --release
 ```
 
-### Ejecutar
-
+### Probar
 ```bash
-# Ejecutar en modo desarrollo
-cargo run
-
-# Ejecutar versión release
-cargo run --release
-```
-
-### Verificar
-
-```bash
-# Verificar errores sin compilar
-cargo check
-
-# Ejecutar con advertencias
+cargo test
 cargo clippy
+cargo fmt
 ```
 
----
-
-## 🗺️ Hoja de Ruta
-
-### ✅ Versión 0.1.0 (Actual)
-- [x] Monitoreo básico de CPU
-- [x] Seguimiento de uso de memoria
-- [x] Tiempo de actividad del sistema
-- [x] Salida CLI formateada
-- [x] Soporte multiplataforma
-
-### 🔨 Versión 0.2.0 (Próxima)
-- [ ] Monitoreo de uso de disco
-- [ ] Estadísticas de red
-- [ ] Lista de procesos (top N por CPU/RAM)
-- [ ] Modo watch (actualizaciones continuas)
-- [ ] Argumentos CLI con clap
-
-### 🚀 Versión 0.3.0 (Futuro)
-- [ ] TUI interactivo (Terminal UI)
-- [ ] Exportar métricas a JSON/CSV
-- [ ] Seguimiento de datos históricos
-- [ ] Alertas y notificaciones
-- [ ] Intervalos de actualización personalizados
+### Estructura del Proyecto
+```
+src/
+├── main.rs              # Punto de entrada
+├── cli.rs               # Análisis CLI
+├── monitor/             # Monitoreo del sistema
+│   ├── cpu.rs
+│   ├── memory.rs
+│   ├── disk.rs
+│   ├── process.rs
+│   └── system.rs
+└── display/
+    └── formatter.rs     # Formato de salida
+```
 
 ---
 
 ## 🤝 Contribuir
 
-¡Las contribuciones son bienvenidas! Por favor, sigue estos pasos:
+¡Contribuciones bienvenidas! Ver [USER_GUIDE.md](USER_GUIDE.md) para detalles.
 
-1. Haz un fork del repositorio
-2. Crea una rama de característica (`git checkout -b feature/caracteristica-increible`)
-3. Haz commit de tus cambios (`git commit -m 'feat: añadir característica increíble'`)
-4. Haz push a la rama (`git push origin feature/caracteristica-increible`)
-5. Abre un Pull Request
-
-### Convención de Commits
-
-Seguimos [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` Nuevas características
-- `fix:` Corrección de bugs
-- `docs:` Cambios en documentación
-- `refactor:` Refactorización de código
-- `test:` Añadir tests
-- `chore:` Tareas de mantenimiento
+### Guía Rápida
+1. Fork el repositorio
+2. Crear rama: `git checkout -b feature/increible`
+3. Commit cambios: `git commit -m 'feat: añadir característica increíble'`
+4. Push y crear Pull Request
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Licencia MIT - ver archivo [LICENSE](LICENSE).
 
 ---
 
 ## 👤 Autor
 
 **SoftDryzz**
-
-* GitHub: [@SoftDryzz](https://github.com/SoftDryzz)
-* Portafolio: [Más proyectos](https://github.com/SoftDryzz?tab=repositories)
+- GitHub: [@SoftDryzz](https://github.com/SoftDryzz)
+- Proyecto: [system_monitor](https://github.com/SoftDryzz/system_monitor)
 
 ---
 
 ## 🙏 Agradecimientos
 
-* [sysinfo](https://github.com/GuillaumeGomez/sysinfo) - Biblioteca de información del sistema
-* [clap](https://github.com/clap-rs/clap) - Parser de argumentos de línea de comandos
-* La comunidad de Rust por su excelente documentación y herramientas
+- [sysinfo](https://github.com/GuillaumeGomez/sysinfo) - Información del sistema
+- [clap](https://github.com/clap-rs/clap) - Análisis CLI
+- [crossterm](https://github.com/crossterm-rs/crossterm) - Manipulación de terminal
+- [ctrlc](https://github.com/Detegr/rust-ctrlc) - Manejo de señales
 
 ---
 
-## 📚 Aprende Más
-
-* [El Libro de Rust](https://doc.rust-lang.org/book/) - Aprende Rust
-* [Guía de Usuario](docs/USER_GUIDE.md) - Guía de uso detallada
-* [Rust by Example](https://doc.rust-lang.org/rust-by-example/) - Ejemplos de Rust
-
----
-
-**⭐ ¡Si te gusta este proyecto, dale una estrella en GitHub!**
+**⭐ ¡Dale una estrella si te resulta útil!**
