@@ -583,4 +583,4 @@ A: Different use case. Lightweight, scriptable, cross-platform.
 
 **Happy Monitoring! 📊**
 
-Version 0.3.0 | [GitHub](https://github.com/SoftDryzz/system_monitor) | [[Changelog]([\CHANGELOG.md](https://github.com/SoftDryzz/system_monitor/blob/main/CHANGELOG.md))](https://github.com/SoftDryzz/system_monitor/blob/main/CHANGELOG.md)
+Version 0.3.0 | [GitHub](https://github.com/SoftDryzz/system_monitor) | [[Changelog]([\CHANGELOG.md](https://github.com/SoftDryzz/system_monitor/blob/main/CHANGELOG.md))]
