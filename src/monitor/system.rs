@@ -4,6 +4,7 @@
 use super::cpu::CpuInfo;
 use super::disk::DiskInfo;
 use super::memory::MemoryInfo;
+use super::process::ProcessInfo;
 use sysinfo::System;
 
 /// Main system monitor facade
@@ -37,6 +38,26 @@ impl SystemMonitor {
     /// Get disk information
     pub fn disks_info(&self) -> Vec<DiskInfo> {
         super::disk::get_disks_info()
+    }
+
+    /// Get top N processes by CPU usage
+    pub fn top_processes_by_cpu(&self, n: usize) -> Vec<ProcessInfo> {
+        super::process::get_top_processes_by_cpu(&self.sys, n)
+    }
+
+    /// Get top N processes by memory usage
+    pub fn top_processes_by_memory(&self, n: usize) -> Vec<ProcessInfo> {
+        super::process::get_top_processes_by_memory(&self.sys, n)
+    }
+
+    /// Get top N busiest CPU cores
+    pub fn top_cpu_cores(&self, n: usize) -> Vec<(usize, f32)> {
+        super::process::get_top_cores(self.sys.cpus(), n)
+    }
+
+    /// Get total number of CPU cores
+    pub fn cpu_count(&self) -> usize {
+        self.sys.cpus().len()
     }
 
     /// Get system uptime in seconds

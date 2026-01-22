@@ -7,7 +7,7 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(
     name = "sysmon",
-    version = "0.2.0",
+    version = "0.3.0",
     author = "SoftDryzz",
     about = "A cross-platform CLI system monitoring tool",
     long_about = None
@@ -20,6 +20,10 @@ pub struct Args {
     /// Update interval in seconds (default: 1, only works with --watch)
     #[arg(short, long, default_value_t = 1)]
     pub interval: u64,
+
+    /// Show detailed information (all CPU cores, more processes)
+    #[arg(short, long)]
+    pub detailed: bool,
 }
 
 /// Parse command-line arguments

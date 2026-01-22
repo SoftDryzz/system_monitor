@@ -31,27 +31,34 @@ fn main() {
 
     if args.watch {
         // Watch mode: continuous updates
-        watch_mode(&mut monitor, args.interval, running);
+        watch_mode(&mut monitor, args.interval, args.detailed, running);
     } else {
         // Single snapshot mode
-        single_snapshot(&mut monitor);
+        single_snapshot(&mut monitor, args.detailed);
     }
 }
 
 /// Display a single snapshot of system information
-fn single_snapshot(monitor: &mut SystemMonitor) {
+fn single_snapshot(monitor: &mut SystemMonitor, detailed: bool) {
     monitor.refresh();
 
     formatter::print_header(false, 0);
-    formatter::print_cpu_info(monitor);
+    formatter::print_cpu_info(monitor, detailed);
     formatter::print_memory_info(monitor);
     formatter::print_disk_info(monitor);
+    formatter::print_top_processes_cpu(monitor, detailed);
+    formatter::print_top_processes_memory(monitor, detailed);
     formatter::print_uptime(monitor);
     formatter::print_footer(false);
 }
 
 /// Continuously monitor and display system information
-fn watch_mode(monitor: &mut SystemMonitor, interval: u64, running: Arc<AtomicBool>) {
+fn watch_mode(
+    monitor: &mut SystemMonitor,
+    interval: u64,
+    detailed: bool,
+    running: Arc<AtomicBool>,
+) {
     // Initial display
     formatter::clear_screen();
 
@@ -64,9 +71,11 @@ fn watch_mode(monitor: &mut SystemMonitor, interval: u64, running: Arc<AtomicBoo
 
         // Display information
         formatter::print_header(true, interval);
-        formatter::print_cpu_info(monitor);
+        formatter::print_cpu_info(monitor, detailed);
         formatter::print_memory_info(monitor);
         formatter::print_disk_info(monitor);
+        formatter::print_top_processes_cpu(monitor, detailed);
+        formatter::print_top_processes_memory(monitor, detailed);
         formatter::print_uptime(monitor);
         formatter::print_footer(true);
 

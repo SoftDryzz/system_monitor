@@ -50,19 +50,39 @@ pub fn print_header(watch_mode: bool, interval: u64) {
 }
 
 /// Print CPU information with visual bars
-pub fn print_cpu_info(monitor: &SystemMonitor) {
+///
+/// # Arguments
+/// * `monitor` - System monitor instance
+/// * `detailed` - If true, shows all cores; if false, shows top 3
+pub fn print_cpu_info(monitor: &SystemMonitor, detailed: bool) {
     let cpu_info = monitor.cpu_info();
+    let cpu_count = monitor.cpu_count();
     let bar = create_bar(cpu_info.global_usage, 20);
 
-    println!("CPU Usage:  {:.1}%  {}", cpu_info.global_usage, bar);
+    println!(
+        "CPU:  {:.1}% ({} cores)  {}",
+        cpu_info.global_usage, cpu_count, bar
+    );
 
-    // Display each core
-    for core in &cpu_info.cores {
-        let core_bar = create_bar(core.usage, 15);
-        println!(
-            "  Core {:2}:  {:5.1}%  {}",
-            core.index, core.usage, core_bar
-        );
+    if detailed {
+        // Show all cores
+        for core in &cpu_info.cores {
+            let core_bar = create_bar(core.usage, 15);
+            println!(
+                "  Core {:2}:  {:5.1}%  {}",
+                core.index, core.usage, core_bar
+            );
+        }
+    } else {
+        // Show only top 3 busiest cores
+        let top_cores = monitor.top_cpu_cores(3);
+        if !top_cores.is_empty() {
+            print!("  Top 3:");
+            for (index, usage) in top_cores {
+                print!(" Core {} ({:.0}%)", index, usage);
+            }
+            println!();
+        }
     }
     println!();
 }
@@ -118,6 +138,85 @@ pub fn print_disk_info(monitor: &SystemMonitor) {
             "  {:8} {:6.1}/{:6.1} GB ({:5.1}%)  {}",
             mount, disk.used_gb, disk.total_gb, disk.percentage, bar
         );
+    }
+}
+
+/// Print top processes by CPU usage
+///
+/// # Arguments
+/// * `monitor` - System monitor instance
+/// * `detailed` - If true, shows 10 processes; if false, shows 5
+pub fn print_top_processes_cpu(monitor: &SystemMonitor, detailed: bool) {
+    let count = if detailed { 10 } else { 5 };
+    let processes = monitor.top_processes_by_cpu(count);
+
+    if processes.is_empty() {
+        return;
+    }
+
+    println!();
+    println!("Top {} Processes (by CPU):", count);
+
+    for (i, proc) in processes.iter().enumerate() {
+        // Format memory
+        let mem_str = if proc.memory_mb >= 1024.0 {
+            format!("{:.1} GB", proc.memory_mb / 1024.0)
+        } else {
+            format!("{:.0} MB", proc.memory_mb)
+        };
+
+        println!(
+            "  {:2}. {:20}  PID {:5}  {:5.1}%  {:>8}",
+            i + 1,
+            truncate_string(&proc.name, 20),
+            proc.pid,
+            proc.cpu_usage,
+            mem_str
+        );
+    }
+}
+
+/// Print top processes by memory usage
+///
+/// # Arguments
+/// * `monitor` - System monitor instance  
+/// * `detailed` - If true, shows 5 processes; if false, shows 3
+pub fn print_top_processes_memory(monitor: &SystemMonitor, detailed: bool) {
+    let count = if detailed { 5 } else { 3 };
+    let processes = monitor.top_processes_by_memory(count);
+
+    if processes.is_empty() {
+        return;
+    }
+
+    println!();
+    println!("Top {} Processes (by Memory):", count);
+
+    for (i, proc) in processes.iter().enumerate() {
+        // Format memory
+        let mem_str = if proc.memory_mb >= 1024.0 {
+            format!("{:.1} GB", proc.memory_mb / 1024.0)
+        } else {
+            format!("{:.0} MB", proc.memory_mb)
+        };
+
+        println!(
+            "  {:2}. {:20}  PID {:5}  {:5.1}%  {:>8}",
+            i + 1,
+            truncate_string(&proc.name, 20),
+            proc.pid,
+            proc.cpu_usage,
+            mem_str
+        );
+    }
+}
+
+/// Truncate string to max length
+fn truncate_string(s: &str, max_len: usize) -> String {
+    if s.len() > max_len {
+        format!("{}...", &s[..max_len - 3])
+    } else {
+        s.to_string()
     }
 }
 
