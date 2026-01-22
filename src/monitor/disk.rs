@@ -5,6 +5,7 @@ use sysinfo::Disks;
 
 /// Individual disk information
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct DiskInfo {
     pub name: String,
     pub mount_point: String,
