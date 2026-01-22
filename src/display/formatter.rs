@@ -93,6 +93,34 @@ pub fn print_uptime(monitor: &SystemMonitor) {
     );
 }
 
+/// Print disk usage information
+pub fn print_disk_info(monitor: &SystemMonitor) {
+    let disks = monitor.disks_info();
+
+    if disks.is_empty() {
+        return;
+    }
+
+    println!();
+    println!("Disk Usage:");
+
+    for disk in disks {
+        let bar = create_bar(disk.percentage as f32, 15);
+
+        // Format mount point (limit to 8 chars for alignment)
+        let mount = if disk.mount_point.len() > 8 {
+            format!("{}...", &disk.mount_point[..5])
+        } else {
+            disk.mount_point.clone()
+        };
+
+        println!(
+            "  {:8} {:6.1}/{:6.1} GB ({:5.1}%)  {}",
+            mount, disk.used_gb, disk.total_gb, disk.percentage, bar
+        );
+    }
+}
+
 /// Print the footer
 ///
 /// # Arguments

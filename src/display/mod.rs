@@ -1,4 +1,4 @@
-// Display module - Output formatting and visualization
-// This module handles all CLI output formatting
+// Monitor module - System information gathering
+// This module contains submodules for different system metrics
 
 pub mod formatter;

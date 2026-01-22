@@ -45,6 +45,7 @@ fn single_snapshot(monitor: &mut SystemMonitor) {
     formatter::print_header(false, 0);
     formatter::print_cpu_info(monitor);
     formatter::print_memory_info(monitor);
+    formatter::print_disk_info(monitor);
     formatter::print_uptime(monitor);
     formatter::print_footer(false);
 }
@@ -65,6 +66,7 @@ fn watch_mode(monitor: &mut SystemMonitor, interval: u64, running: Arc<AtomicBoo
         formatter::print_header(true, interval);
         formatter::print_cpu_info(monitor);
         formatter::print_memory_info(monitor);
+        formatter::print_disk_info(monitor);
         formatter::print_uptime(monitor);
         formatter::print_footer(true);
 

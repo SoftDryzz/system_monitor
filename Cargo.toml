@@ -1,6 +1,6 @@
 [package]
 name = "system_monitor"
-version = "0.2.0" 
+version = "0.2.1"
 edition = "2021"
 authors = ["SoftDryzz"]
 description = "A cross-platform CLI system monitoring tool written in Rust"
@@ -12,7 +12,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 sysinfo = "0.32"
 clap = { version = "4.5", features = ["derive"] }
-crossterm = "0.29.0"  # Para limpiar terminal y manejar entrada
+crossterm = "0.28"  # Para limpiar terminal y manejar entrada
 ctrlc = "3.4"       # Para manejar Ctrl+C
 
 [[bin]]

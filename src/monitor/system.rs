@@ -2,6 +2,7 @@
 // Main facade for accessing all system information
 
 use super::cpu::CpuInfo;
+use super::disk::DiskInfo;
 use super::memory::MemoryInfo;
 use sysinfo::System;
 
@@ -31,6 +32,11 @@ impl SystemMonitor {
     /// Get memory information
     pub fn memory_info(&self) -> MemoryInfo {
         MemoryInfo::from_system(&self.sys)
+    }
+
+    /// Get disk information
+    pub fn disks_info(&self) -> Vec<DiskInfo> {
+        super::disk::get_disks_info()
     }
 
     /// Get system uptime in seconds
